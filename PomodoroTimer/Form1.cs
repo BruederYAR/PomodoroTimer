@@ -17,6 +17,7 @@ namespace PomodoroTimer
         public Pomodoro()
         {
             InitializeComponent();
+            //Print(timerLabel, 22, 22);
         }
 
         SoundPlayer simple = new SoundPlayer(@"C:\Windows\media\tada.wav"); //Звук окончания
@@ -33,37 +34,42 @@ namespace PomodoroTimer
 
         private void timer1_Tick(object sender, EventArgs e) 
         {
+            const int Min = 60; //Значение минуты
+
             TimeOver(); //Проаерять не закончилось ли время
-            Print(timerLabel, ref TimeSec, ref TimeMin); // Вывести время в форму
+            Print(timerLabel, TimeSec, TimeMin); // Вывести время в форму
             TimeSec++; //Прибавить тик
+            if (TimeSec == Min) //Проверка на минуту
+            {
+                TimeMin++;
+                TimeSec = 0;
+            }
         }
 
-        void Print(Label timer, ref int TimeSec, ref int TimeMin) //Метод вывода времени на форму
+        void Print(Label timer, int TimeSec, int TimeMin) //Метод вывода времени на форму
         {
-            const int Min = 60; //Значение минуты
             if (TimeMin == 0) //Если не прошло минуты
             {
-                if (TimeSec > 9) //Если не двухзначное число
-                    timer.Left = 47; //Перемещяем
-                else
-                    timer.Left = 66;
-
                 timer.Text = TimeSec.ToString(); //Выводим
-                if (TimeSec == Min) //Проверка на минуту
-                {
-                    TimeMin++;
-                    TimeSec = 0;
-                }
+                Center(timer.Text);
             }
-            else 
+            else
             {
-                timer.Left = 40;
                 timer.Text = $"{TimeMin}:{TimeSec}"; //Выводим вместе с минутами
-                if (TimeSec == 60) //Проверка на минуту
-                {
-                    TimeMin++;
-                    TimeSec = 0;
-                }
+                Center(timer.Text);
+            }
+            void Center(string textTime) //Центрируем текст
+            {
+                if (textTime.Length == 1)
+                    timer.Left = 66;
+                    else if (textTime.Length == 2)
+                        timer.Left = 50;
+                        else if(textTime.Length == 3)
+                            timer.Left = 40;
+                            else if (textTime.Length == 4)
+                                timer.Left = 30;
+                                else if (textTime.Length == 5)
+                                    timer.Left = 15;
             }
         }
         void Stop() //Сброс всех значений 
@@ -73,7 +79,7 @@ namespace PomodoroTimer
             Pause = false;
             TimeSec = 0;
             TimeMin = 0;
-            Print(timerLabel, ref TimeSec, ref TimeMin);
+            Print(timerLabel, TimeSec, TimeMin);
         }
         void TimeOver() //Проверка на окончание времени
         {
@@ -81,8 +87,8 @@ namespace PomodoroTimer
             {
                 Stop(); //Останавливаем
                 simple.Play(); //Проигрываем звук
-                stopButt.Text = "SKIP";  //Меняем имя кнопки
                 MessageBox.Show("Time is over, take a rest", "Time is over", MessageBoxButtons.OK, MessageBoxIcon.None); //Выводим сообщение
+                stopButt.Text = "SKIP";  //Меняем имя кнопки
                 Rest = true; //Задаём отдых
                 SwitchColors(RestColor ,stopButt, startButt); //Меняем цвет
             }
@@ -90,8 +96,8 @@ namespace PomodoroTimer
             {
                 Stop(); //Останавливаем
                 simple.Play(); //Проигрываем звук
-                stopButt.Text = "STOP"; //Меняем имя кнопки
                 MessageBox.Show("Rest is over, time to get work!", "Rest is over", MessageBoxButtons.OK, MessageBoxIcon.None); //Выводим сообщение
+                stopButt.Text = "STOP"; //Меняем имя кнопки
                 Rest = false; //Говорим о работе
                 SwitchColors(WorkColor, stopButt, startButt); //Меняем цвет
             }
@@ -127,9 +133,9 @@ namespace PomodoroTimer
             else //Если отдыхаем, то меняем режим
             {
                 Stop();
-                Rest = false;
-                startButt.Text = "STOP";
+                stopButt.Text = "STOP";
                 SwitchColors(WorkColor ,stopButt, startButt);
+                Rest = false;
             }
         }
     }
