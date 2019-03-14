@@ -41,7 +41,7 @@
             // 
             this.timerLabel.AutoSize = true;
             this.timerLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 60F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.timerLabel.Location = new System.Drawing.Point(86, 9);
+            this.timerLabel.Location = new System.Drawing.Point(86, 18);
             this.timerLabel.Name = "timerLabel";
             this.timerLabel.Size = new System.Drawing.Size(83, 91);
             this.timerLabel.TabIndex = 0;
@@ -102,10 +102,10 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
-            this.MinimizeBox = false;
             this.Name = "Pomodoro";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Pomodoro";
+            this.TopMost = true;
             this.TransparencyKey = System.Drawing.Color.White;
             this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
             this.ResumeLayout(false);

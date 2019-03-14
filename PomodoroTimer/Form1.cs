@@ -28,11 +28,15 @@ namespace PomodoroTimer
 
         public int TimeSec =  0; //Время в секундах
         public int TimeMin = 0; //Время в минутах
-        public int TimeJobLimit = 1; //Лимит времени работы (минуты)
+        public int TimeJobLimit = 25; //Лимит времени работы (минуты)
 
-        public int TimeRestLimit = 1; //Лимит времени отдыха (минуты)
+        public int TimeRestLimit = SmallRest; //Лимит времени отдыха (минуты)
+
+        public const int SmallRest = 5;
+        public const int BigRest = 25;
+
         public int RestScore = 0; //Счётчик перерывов
-        public const int RestScoreLimit = 4; //Колличество маленьких перерывов до большого
+        public const int RestScoreLimit = 3; //Колличество маленьких перерывов до большого
 
         public bool Pause = false; //Флаг паузы
         public bool Mode = false; //Флаг отдыха
@@ -41,8 +45,9 @@ namespace PomodoroTimer
         {
             const int Min = 60; //Значение минуты
 
-            TimeOver(); //Проаерять не закончилось ли время
+            TimeOver(); //Проверять не закончилось ли время
             Print(timerLabel, TimeSec, TimeMin); // Вывести время в форму
+
             TimeSec++; //Прибавить тик
             if (TimeSec == Min) //Проверка на минуту
             {
@@ -77,7 +82,8 @@ namespace PomodoroTimer
                                     timer.Left = 13;
             }
         }
-        void Stop() //Сброс всех значений 
+
+        private void Stop() //Сброс всех значений 
         {
             timer1.Enabled = false;
             startButt.Text = "START";
@@ -91,6 +97,7 @@ namespace PomodoroTimer
             if(TimeMin == TimeJobLimit && !Mode) //Если время работы окончено и мы не отдыхаем
             {
                 SwitchMode();
+                RestScore++; //Прибавим перерыв в счётчик
             }
             if(TimeMin == TimeRestLimit && Mode) //Если время отдыха закончино и мы отдыхаем
             {
@@ -110,11 +117,22 @@ namespace PomodoroTimer
             }
             else
             {
+                if (RestScore == RestScoreLimit) //Если счётчик перерывов равен лимиту
+                {
+                    RestScore = 0; //Обнуляем
+                    TimeRestLimit = BigRest; //Говорим о большом  перерыве
+                    TextLabel.Text = "Time is over, take a big rest"; //Выводим инфу о большом перерыве
+                }
+                else
+                {
+                    TimeRestLimit = SmallRest; //Говорим о маленьком переыве
+                    TextLabel.Text = "Time is over, take a rest"; //Выводим
+                }
+
                 Stop(); //Останавливаем
                 simple.Play(); //Проигрываем звук
                 stopButt.Text = "SKIP";  //Меняем имя кнопки
-                SwitchColors(RestColor, stopButt, startButt); //Меняем цвет
-                TextLabel.Text = "Time is over, take a rest";
+                SwitchColors(RestColor, stopButt, startButt); //Меняем цвет                
             }
             Mode = !Mode;
         }
@@ -125,6 +143,7 @@ namespace PomodoroTimer
             for (int i = 0; i != butt.Length; i++) //Меняем цвет кнопок
                 butt[i].BackColor = color;
         }
+
         private void startButt_Click(object sender, EventArgs e) //Если конпка старт нажата
         {
             if (!FirstClick) //Проверка на первый клик
