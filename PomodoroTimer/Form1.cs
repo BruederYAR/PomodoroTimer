@@ -14,11 +14,22 @@ namespace PomodoroTimer
 {
     public partial class Pomodoro : Form
     {
+        SettingsForm settingsForm = new SettingsForm();
+
+        //public string[] settings;
+        static string[] settings = new string[] { "25", "5", "25", "4" };
+
         public Pomodoro()
         {
             InitializeComponent();
             //Print(timerLabel, 11, 11);
-        }
+
+            if (!File.Exists("Settings.txt"))
+            {
+                File.WriteAllLines("Settings.txt", settings);
+            }
+            settings = File.ReadAllLines("Settings.txt", Encoding.Default);
+    }
 
         SoundPlayer simple = new SoundPlayer(@"C:\Windows\media\tada.wav"); //Звук окончания
         Color WorkColor = Color.Red; //Цвет работы
@@ -28,18 +39,18 @@ namespace PomodoroTimer
 
         public int TimeSec =  0; //Время в секундах
         public int TimeMin = 0; //Время в минутах
-        public int TimeJobLimit = 25; //Лимит времени работы (минуты)
+        public static int TimeJobLimit = int.Parse(settings[0]); //Лимит времени работы (минуты)
 
-        public int TimeRestLimit = SmallRest; //Лимит времени отдыха (минуты)
+        public static int TimeRestLimit = SmallRest; //Лимит времени отдыха (минуты)
 
-        public const int SmallRest = 5;
-        public const int BigRest = 25;
+        public static int SmallRest = int.Parse(settings[1]);
+        public static int BigRest = int.Parse(settings[2]);
 
         public int RestScore = 0; //Счётчик перерывов
-        public const int RestScoreLimit = 3; //Колличество маленьких перерывов до большого
+        public static int RestScoreLimit = int.Parse(settings[3]); //Колличество маленьких перерывов до большого
 
         public bool Pause = false; //Флаг паузы
-        public bool Mode = false; //Флаг отдыха
+        public bool Mode = false; //Флаг режима
 
         private void timer1_Tick(object sender, EventArgs e) 
         {
@@ -140,6 +151,7 @@ namespace PomodoroTimer
         void SwitchColors(Color color, params Button[] butt)
         {
             this.BackColor = color; //Меняем цвет формы
+            menuStrip.BackColor = color;
             for (int i = 0; i != butt.Length; i++) //Меняем цвет кнопок
                 butt[i].BackColor = color;
         }
@@ -176,6 +188,29 @@ namespace PomodoroTimer
                 SwitchMode();
                 stopButt.Text = "STOP";
             }
+        }
+
+        private void SettingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Stop();
+            settingsForm.ShowDialog();
+            SwithSettings();
+        }
+
+        void SwithSettings()
+        {
+            settings = File.ReadAllLines("Settings.txt", Encoding.Default);
+
+            TimeJobLimit = int.Parse(settings[0]); //Лимит времени работы (минуты)
+            SmallRest = int.Parse(settings[1]);
+            BigRest = int.Parse(settings[2]);
+            RestScoreLimit = int.Parse(settings[3]); //Колличество маленьких перерывов до большого
+            TimeRestLimit = SmallRest; //Лимит времени отдыха (минуты)
+        }
+
+        private void AboutPomodoroToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://en.wikipedia.org/wiki/Pomodoro_Technique");
         }
     }
 }
